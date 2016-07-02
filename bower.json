@@ -1,0 +1,26 @@
+{
+  "name": "optin",
+  "version": "0.0.0",
+  "main": "optin.js",
+  "homepage": "https://github.com/volkovasystems/optin",
+  "authors": [
+    "Richeve S. Bebedor <richeve.bebedor@gmail.com>"
+  ],
+  "description": "Include client files.",
+  "keywords": [
+    "include",
+    "optin",
+    "load"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "harden": "^0.3.2"
+  }
+}
