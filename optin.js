@@ -96,6 +96,14 @@ var optin = function optin( option ){
 		throw new Error( "name not specified" );
 	}
 
+	optin.data.dependency = optin.data.dependency || { };
+
+	if( name in optin.data.dependency ){
+		console.log( name, "is already in the dependency list" );
+
+		return optin.data.dependency[ name ].element;
+	}
+
 	var path = option.path;
 	if( !path ){
 		throw new Error( "path not specified" );
@@ -117,14 +125,6 @@ var optin = function optin( option ){
 		throw new Error( "unknown dependency type" );
 	}
 
-	optin.data.dependency = optin.data.dependency || { };
-
-	if( option.name in optin.data.dependency ){
-		console.log( option.name, "is already in the dependency list" );
-
-		return;
-	}
-
 	optin.data.dependency[ option.name ] = option;
 
 	var element = null;
@@ -139,6 +139,8 @@ var optin = function optin( option ){
 	}else{
 		throw new Error( "unknown dependency type" );
 	}
+
+	option.element = element;
 
 	element.setAttribute( "name", name );
 
@@ -225,7 +227,7 @@ harden( "load",
 			var loadedDependency = dependencyList.filter( function onEachDependency( name ){
 				var data = optin.data.dependency[ name ];
 
-				return data.status == "success";
+				return ( data.status == "success" );
 			} ).length;
 
 			dependencyList = dependencyList
@@ -271,8 +273,10 @@ harden( "done",
 		if( self.getAttribute( "name" ) == optin.data.current ){
 			var name = optin.data.current;
 
-			optin.data.dependency[ name ].timeEnd = Date.now( );
-			optin.data.dependency[ name ].status = "success";
+			var data = optin.data.dependency[ name ];
+
+			data.timeEnd = Date.now( );
+			data.status = "success";
 
 			console.debug( name, "is loaded", self );
 
