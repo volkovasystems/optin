@@ -1,6 +1,6 @@
 "use strict";
 
-/*:
+/*;
 	@module-license:
 		The MIT License (MIT)
 		@mit-license
@@ -49,7 +49,8 @@
 
 	@include:
 		{
-			"harden": "harden"
+			"harden": "harden",
+			"lilfy": "lilfy"
 		}
 	@end-include
 */
@@ -60,10 +61,16 @@ if( typeof window != "undefined" &&
 	throw new Error( "harden is not defined" );
 }
 
+if( typeof window != "undefined" &&
+	!( "lilfy" in window ) )
+{
+	throw new Error( "lilfy is not defined" );
+}
+
 harden( "STYLE", "style" );
 harden( "SCRIPT", "script" );
 
-/*:
+/*;
 	@option:
 		{
 			"name:required": "string",
@@ -73,12 +80,18 @@ harden( "SCRIPT", "script" );
 				"script"
 			],
 			"version": "string",
-			"callback": "string"
+			"callback": "string",
+
+			"pointer": "string",
+			"file": "string",
+			"basePath": "string",
+
+			"dependency": "Array"
 		}
 	@end-option
 */
 var optin = function optin( option ){
-	/*:
+	/*;
 		@meta-configuration:
 			{
 				"option:required": "object"
@@ -91,12 +104,29 @@ var optin = function optin( option ){
 
 	option = option || { };
 
+	var dependency = option.dependency;
+	if( dependency &&
+		Array.isArray( dependency ) )
+	{
+		var element = [ ];
+
+		dependency = dependency.reverse( );
+
+		while( dependency.length ){
+			element.push( optin( dependency.pop( ) ) );
+		}
+
+		return element;
+	}
+
+	var pointer = option.pointer;
+	var file = option.file;
+	var basePath = option.basePath;
+
 	var name = option.name;
 	if( !name ){
 		throw new Error( "name not specified" );
 	}
-
-	optin.data.dependency = optin.data.dependency || { };
 
 	if( name in optin.data.dependency ){
 		console.log( name, "is already in the dependency list" );
@@ -105,6 +135,15 @@ var optin = function optin( option ){
 	}
 
 	var path = option.path;
+
+	if( !path && name && file ){
+		basePath = basePath ||
+			window.BASE_LIBRARY_PATH ||
+			"/library";
+
+		path = [ basePath, name, file ].join( "/" );
+	}
+
 	if( !path ){
 		throw new Error( "path not specified" );
 	}
@@ -156,6 +195,15 @@ var optin = function optin( option ){
 		}
 	}
 
+	if( pointer ){
+		if( ( /\?/ ).test( path ) ){
+			path = path + "&pointer=" + lilfy( pointer );
+
+		}else{
+			path = "?pointer=" + lilfy( pointer );
+		}
+	}
+
 	if( type == STYLE ){
 		element.setAttribute( "href", path );
 		element.setAttribute( "rel", "stylesheet" );
@@ -166,8 +214,21 @@ var optin = function optin( option ){
 	}
 
 	var callback = option.callback;
-	if( !callback ){
-		callback = ( path.match( /(?:\?|\&)callback\=([a-zA-Z][a-zA-Z0-9_$]+?)/ ) || [ ] )[ 1 ];
+	if( !callback &&
+		( /callback\=[a-zA-Z][a-zA-Z0-9_$]+?/ ).test( path ) )
+	{
+		callback = ( path.match( /callback\=([a-zA-Z][a-zA-Z0-9_$]+?)/ ) || [ ] )[ 1 ];
+	}
+
+	if( callback &&
+		!( /callback\=[a-zA-Z][a-zA-Z0-9_$]+?/ ).test( path ) )
+	{
+		if( ( /\?/ ).test( path ) ){
+			path = path + "&callback=" + callback;
+
+		}else{
+			path = "?callback=" + callback;
+		}
 	}
 
 	if( callback ){
@@ -199,9 +260,13 @@ harden( "boot",
 		window.addEventListener( "error", optin.onError );
 
 		harden( "BOOTED", "booted", optin );
+
+		return optin;
 	}, optin );
 
 harden( "data", optin.data || { }, optin );
+
+harden( "dependency", option.data.dependency || { }, option.data );
 
 harden( "queue", optin.queue || [ ], optin );
 
@@ -210,6 +275,8 @@ harden( "push",
 		optin.queue.push( element );
 
 		optin.load( );
+
+		return optin;
 	}, optin );
 
 harden( "load",
@@ -224,11 +291,12 @@ harden( "load",
 			var dependencyList = Object.keys( optin.data.dependency );
 
 			var totalDependency = dependencyList.length;
-			var loadedDependency = dependencyList.filter( function onEachDependency( name ){
-				var data = optin.data.dependency[ name ];
+			var loadedDependency = dependencyList
+				.filter( function onEachDependency( name ){
+					var data = optin.data.dependency[ name ];
 
-				return ( data.status == "success" );
-			} ).length;
+					return ( data.status == "success" );
+				} ).length;
 
 			dependencyList = dependencyList
 				.map( function onEachDependency( name ){
@@ -242,9 +310,10 @@ harden( "load",
 					return data;
 				} );
 
-			var averageDuration = ( dependencyList.reduce( function onEachDependency( total, data ){
-				return total + data.duration;
-			}, 0 ) / loadedDependency ).toFixed( 2 );
+			var averageDuration = ( dependencyList
+				.reduce( function onEachDependency( total, data ){
+					return total + data.duration;
+				}, 0 ) / loadedDependency ).toFixed( 2 );
 
 			console.log( "all dependency loaded",
 				[ "(", loadedDependency, "/", totalDependency, ")" ].join( "" ),
@@ -266,6 +335,8 @@ harden( "load",
 		}else if( type == SCRIPT ){
 			optin.body.appendChild( element );
 		}
+
+		return optin;
 	}, optin );
 
 harden( "done",
@@ -288,6 +359,8 @@ harden( "done",
 		}
 
 		optin.load( );
+
+		return optin;
 	}, optin );
 
 harden( "failed",
@@ -303,4 +376,6 @@ harden( "failed",
 		}
 
 		optin.load( );
+
+		return optin;
 	}, optin );

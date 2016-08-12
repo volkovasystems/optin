@@ -21,6 +21,7 @@
     "tests"
   ],
   "dependencies": {
-    "harden": "^0.3.2"
+    "harden": "^0.3.2",
+    "lilfy": "^0.0.0"
   }
 }
