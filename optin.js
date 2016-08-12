@@ -236,7 +236,7 @@ var optin = function optin( option ){
 			"optin.done( this, @callback );".replace( "@callback", callback ) );
 
 	}else{
-		element.setAttribute( "onload", "optin.done( this )" );
+		element.setAttribute( "onload", "optin.done( this );" );
 	}
 
 	element.setAttribute( "onerror", "optin.failed( this );" );
@@ -266,7 +266,7 @@ harden( "boot",
 
 harden( "data", optin.data || { }, optin );
 
-harden( "dependency", option.data.dependency || { }, option.data );
+harden( "dependency", optin.data.dependency || { }, optin.data );
 
 harden( "queue", optin.queue || [ ], optin );
 
