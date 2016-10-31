@@ -1,6 +1,6 @@
 {
   "name": "optin",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "main": "optin.js",
   "homepage": "https://github.com/volkovasystems/optin",
   "authors": [
@@ -8,9 +8,13 @@
   ],
   "description": "Include client files.",
   "keywords": [
-    "include",
-    "optin",
-    "load"
+	  "include",
+      "load",
+      "require",
+      "client",
+      "module",
+      "files",
+      "optin"
   ],
   "license": "MIT",
   "ignore": [
@@ -22,6 +26,10 @@
   ],
   "dependencies": {
     "harden": "^0.3.2",
-    "lilfy": "^0.0.0"
+    "lilfy": "^0.0.0",
+    "doubt": "^0.0.6",
+    "truu": "^0.0.0",
+    "truly": "^0.0.1",
+    "falzy": "^0.0.1"
   }
 }

@@ -1,0 +1,36 @@
+{
+  "name": "optin",
+  "version": "0.2.0",
+  "description": "Include client files.",
+  "main": "optin.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/volkovasystems/optin.git"
+  },
+  "keywords": [
+    "include",
+    "load",
+    "require",
+    "client",
+    "module",
+    "files",
+    "optin"
+  ],
+  "author": "Richeve S. Bebedor <richeve.bebedor@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/volkovasystems/optin/issues"
+  },
+  "homepage": "https://github.com/volkovasystems/optin#readme",
+  "dependencies": {
+    "doubt": "0.0.6",
+    "falzy": "0.0.1",
+    "harden": "^0.3.5",
+    "lilfy": "^0.1.0",
+    "truly": "0.0.1",
+    "truu": "0.0.0"
+  }
+}
